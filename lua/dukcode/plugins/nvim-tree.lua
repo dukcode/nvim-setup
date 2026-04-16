@@ -3,6 +3,7 @@ return {
   dependencies = "nvim-tree/nvim-web-devicons",
   config = function()
     local nvimtree = require("nvim-tree")
+    -- local api = require("nvim-tree.api") -- nvim-tree 제어용 API (열기/닫기/포커스 등)
 
     -- recommended settings from nvim-tree documentation
     vim.g.loaded_netrw = 1
@@ -25,6 +26,7 @@ return {
       },
       -- change folder arrow icons
       renderer = {
+        group_empty = true, -- compact middle empty package
         indent_markers = {
           enable = true,
         },
@@ -48,7 +50,7 @@ return {
         },
       },
       filters = {
-        custom = { ".DS_Store" },
+        custom = { ".DS_store" },
       },
       git = {
         ignore = false,

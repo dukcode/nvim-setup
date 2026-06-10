@@ -1,6 +1,9 @@
 return {
   "nvim-telescope/telescope.nvim",
-  branch = "0.1.x",
+  -- v0.2.0에서 nvim-treesitter 의존성을 제거하고 nvim core API로 트리시터
+  -- 미리보기를 직접 구현하도록 바뀌어 nvim-treesitter main 브랜치와 호환된다.
+  -- v0.2.x는 Neovim 0.10.4+ 필요.
+  version = "^0.2.0",
   dependencies = {
     "nvim-lua/plenary.nvim",
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },

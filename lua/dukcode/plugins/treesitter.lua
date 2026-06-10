@@ -42,6 +42,7 @@ return {
         "query",
         "vimdoc",
         "c",
+        "kotlin",
       },
       incremental_selection = {
         enable = true,

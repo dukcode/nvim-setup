@@ -118,6 +118,9 @@ config.keys = {
 | `<leader>tn` / `<leader>tp` | 다음 / 이전 탭 |
 | `<leader>tf` | 현재 버퍼를 새 탭으로 |
 
+> bufferline은 `mode = "tabs"`라 상단 탭바는 **vim tabpage**를 보여준다.
+> nvim-tree에서 `<CR>`은 현재 탭의 파일을 갈아치우고, **`t`를 누르면 새 탭으로 연다** (`T`는 백그라운드 새 탭).
+
 ### Git (gitsigns)
 
 | 키 | 동작 |
@@ -215,7 +218,7 @@ config.keys = {
 |---|---|
 | `folke/tokyonight.nvim` | 컬러스킴. `night` + 커스텀 팔레트, transparent |
 | `nvim-lualine/lualine.nvim` | 상태줄. 커스텀 테마 + lazy 업데이트 카운트 |
-| `akinsho/bufferline.nvim` | 버퍼라인. 기본값(buffer 모드) |
+| `akinsho/bufferline.nvim` | 버퍼라인. `mode = "tabs"` — vim tabpage 표시 |
 | `goolord/alpha-nvim` | 시작 대시보드. 커스텀 헤더/메뉴 |
 | `stevearc/dressing.nvim` | `vim.ui.select` / `input` 개선 |
 | `lukas-reineke/indent-blankline.nvim` | 들여쓰기 가이드 (`┊`) |

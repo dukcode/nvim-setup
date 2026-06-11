@@ -1,7 +1,7 @@
 # nvim-setup
 
-개인 Neovim 설정. `lazy.nvim` 기반 모듈형 구조이며 macOS + WezTerm 환경을 기준으로 한다.
-일부 IntelliJ 스타일 단축키를 포함한다.
+개인 Neovim 설정. `lazy.nvim` 기반 모듈형 구조이며 macOS + Kitty keyboard protocol을 지원하는
+터미널(Ghostty, Kitty 등) 환경을 기준으로 한다. 일부 IntelliJ 스타일 단축키를 포함한다.
 
 ---
 
@@ -11,7 +11,7 @@
 # 1. 시스템 의존성 설치
 # 주의: tree-sitter CLI는 tree-sitter-cli 패키지 (tree-sitter는 라이브러리만 설치됨)
 brew install tree-sitter-cli node ripgrep fd
-brew install --cask font-d2coding-ligature-nerd-font
+brew install --cask font-d2coding-ligature-nerd-font ghostty
 
 # 2. 설정 클론
 git clone https://github.com/dukcode/nvim-setup.git ~/.config/nvim
@@ -20,7 +20,8 @@ git clone https://github.com/dukcode/nvim-setup.git ~/.config/nvim
 nvim
 ```
 
-WezTerm을 쓴다면 `~/.config/wezterm/wezterm.lua`에 다음 한 줄을 추가해야 `Cmd+1` 단축키가 동작한다.
+`Cmd+1`은 터미널이 Kitty keyboard protocol로 super 모디파이어를 nvim에 그대로 전달해야 동작한다.
+Ghostty라면 기본 `cmd+digit_1`/`cmd+1` 매핑(goto_tab)을 둘 다 unbind해야 forward된다.
 [IntelliJ 스타일 단축키](#intellij-스타일-단축키) 참고.
 
 ---
@@ -48,8 +49,9 @@ WezTerm을 쓴다면 `~/.config/wezterm/wezterm.lua`에 다음 한 줄을 추가
 
 ### 권장 터미널
 
-WezTerm. `Cmd+숫자` 키 변환 매핑을 사용하려면 필수. 다른 터미널을 쓴다면
-[`<M-1>`을 다른 키로 교체](#커스텀-단축키-변경)하면 된다.
+Kitty keyboard protocol을 지원하고 super 모디파이어를 forward할 수 있는 터미널 —
+**Ghostty**(권장), Kitty 등. 지원하지 않는 터미널이라면
+[`<D-1>`을 다른 키로 교체](#커스텀-단축키-변경)하면 된다.
 
 ---
 
@@ -83,15 +85,20 @@ Leader 키는 **스페이스**(` `).
 | 트리 포커스 | `Cmd+1` | 트리 닫고 직전 문서로 포커스 |
 | 트리 포커스 | `Esc` | 트리 유지, 직전 창으로 포커스만 이동 |
 
-WezTerm이 `Cmd+1`을 `Alt+1`로 변환해서 nvim에 전달한다. WezTerm 설정:
+터미널이 Kitty keyboard protocol로 `Cmd+1`을 그대로 nvim에 전달한다 (nvim은 `<D-1>`로 수신).
+Ghostty 설정 예시 (`~/.config/ghostty/config.ghostty`):
 
-```lua
-config.keys = {
-  { key = '1', mods = 'CMD', action = wezterm.action.SendKey { key = '1', mods = 'ALT' } },
-}
+```
+# Ghostty 기본 매핑(goto_tab)이 physical/unicode 두 형태로 등록되므로 둘 다 unbind
+keybind = cmd+digit_1=unbind
+keybind = cmd+1=unbind
 ```
 
-부수효과: WezTerm 기본 `Cmd+1`(첫 탭 활성화)은 가려진다.
+부수효과: Ghostty 기본 `Cmd+1`(첫 탭 활성화)은 가려진다.
+
+> `cmd+one=unbind` 한 줄로는 동작하지 않는다. Ghostty가 기본 매핑을 W3C keycode
+> (`cmd+digit_1`)와 unicode codepoint (`cmd+1`) 두 형태로 등록하므로 양쪽 다 명시적으로
+> 덮어써야 한다.
 
 ### 파일 / 탐색
 
@@ -316,8 +323,10 @@ config.keys = {
 
 ### Cmd+1이 안 먹어요
 
-- WezTerm `~/.config/wezterm/wezterm.lua`에 `config.keys` 매핑이 들어 있는지 확인.
-- 다른 터미널이라면 [단축키 변경](#커스텀-단축키-변경) 참고.
+- Ghostty라면 `~/.config/ghostty/config.ghostty`에 `cmd+digit_1=unbind`와 `cmd+1=unbind`
+  **두 줄 모두** 있는지 확인. 한 줄만 있으면 다른 형태로 등록된 기본 매핑이 가로챈다.
+- `ghostty +show-config --default=false | grep super+` 로 우리 매핑이 실제 등록됐는지 점검 가능.
+- Kitty keyboard protocol 지원이 없는 터미널이면 [단축키 변경](#커스텀-단축키-변경) 참고.
 
 ### treesitter 하이라이트가 안 보여요
 
@@ -354,11 +363,12 @@ tree-sitter --version     # 0.25.x 등
 
 ## 커스텀 단축키 변경
 
-WezTerm 외 터미널을 쓴다면 `lua/dukcode/plugins/nvim-tree.lua`의 매핑을 바꾸면 된다.
+Kitty keyboard protocol 지원이 없는 터미널이거나 다른 키를 쓰고 싶다면
+`lua/dukcode/plugins/nvim-tree.lua`의 매핑을 바꾸면 된다.
 
 ```lua
-keymap.set("n", "<M-1>", smart_tree_focus_toggle, { desc = "..." })
---          ^^^^^^^^ 여기를 원하는 키로 (예: "<leader>1", "<F2>")
+keymap.set("n", "<D-1>", smart_tree_focus_toggle, { desc = "..." })
+--          ^^^^^^^^ 여기를 원하는 키로 (예: "<leader>1", "<F2>", "<M-1>")
 ```
 
-GUI Neovim(Neovide 등)을 쓴다면 `<D-1>`로 바꾸면 Cmd 키를 직접 받을 수 있다.
+GUI Neovim(Neovide 등)은 별도 설정 없이 `<D-1>`을 직접 수신한다.

@@ -75,7 +75,7 @@ return {
     keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- refresh file explorer
 
     -- IntelliJ 스타일 cmd+1: 트리 포커스 토글
-    -- WezTerm에서 Cmd+1 → Alt+1로 변환해 보내므로 nvim 쪽은 <M-1>로 받음
+    -- 터미널이 Kitty keyboard protocol로 Cmd+1을 그대로 전달, nvim은 <D-1>로 수신.
     -- - 문서에서 누르면 트리 열고 포커스 (이미 열려있으면 포커스만)
     -- - 트리에서 누르면 트리 닫고 직전 문서로 포커스
     local function smart_tree_focus_toggle()
@@ -87,6 +87,6 @@ return {
         api.tree.open()
       end
     end
-    keymap.set("n", "<M-1>", smart_tree_focus_toggle, { desc = "Toggle focus nvim-tree (IntelliJ style)" })
+    keymap.set("n", "<D-1>", smart_tree_focus_toggle, { desc = "Toggle focus nvim-tree (IntelliJ style)" })
   end
 }

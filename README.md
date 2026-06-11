@@ -10,7 +10,7 @@
 ```sh
 # 1. 시스템 의존성 설치
 # 주의: tree-sitter CLI는 tree-sitter-cli 패키지 (tree-sitter는 라이브러리만 설치됨)
-brew install tree-sitter-cli node ripgrep fd
+brew install tree-sitter-cli node ripgrep fd imagemagick
 brew install --cask font-d2coding-ligature-nerd-font ghostty
 
 # 2. 설정 클론
@@ -46,6 +46,7 @@ Ghostty라면 기본 `cmd+digit_1`/`cmd+1` 매핑(goto_tab)을 둘 다 unbind해
 | 빌드 | `node` | 일부 treesitter 파서(tsx, svelte 등) 생성 |
 | 런타임 | `ripgrep` (`rg`) | telescope live_grep, todo-comments |
 | 런타임 | `fd` | telescope find_files 가속 (선택) |
+| 런타임 | `imagemagick` (`magick`) | snacks.image — 마크다운 인라인 이미지 렌더 (Kitty graphics protocol 백엔드) |
 
 ### 권장 터미널
 
@@ -202,6 +203,12 @@ keybind = cmd+1=unbind
 | `<leader>+` / `<leader>-` | 숫자 증감 |
 | `]t` / `[t` | 다음 / 이전 TODO |
 
+### 마크다운
+
+별도 키맵 없음. 노멀 모드에서 자동으로 conceal 렌더, INSERT/VISUAL로 들어가면 raw 마크다운으로
+풀린다 (`render_modes = { "n", "c", "t" }` 설정). 이미지는 `snacks.image`가 자동 인라인 표시
+(Ghostty 같은 Kitty graphics protocol 지원 터미널 필요).
+
 ### 자동완성 (인서트 모드)
 
 | 키 | 동작 |
@@ -254,7 +261,14 @@ keybind = cmd+1=unbind
 - tokyonight: `night` 스타일 + BG/FG 커스텀 + transparent.
 - lualine: `my_lualine_theme` 직접 정의 + lazy 업데이트 카운트 표시.
 
-### 6. 전역 옵션 요약 (`core/options.lua`)
+### 6. snacks.image Obsidian vault resolver (특수 케이스)
+
+`lua/dukcode/plugins/snacks.lua`에 `~/Library/Mobile Documents/iCloud~md~obsidian/Documents`
+하위 마크다운 전용 `resolve` 함수가 있다. 해당 vault는 "파일별 첨부 폴더" 규칙을 써서
+`![](img.png)` 같은 파일명 src를 `<md_dir>/assets/<md_파일명>/<img>` 로 매핑해야
+하기 때문. vault 바깥은 `nil`을 반환해 snacks 기본 resolver를 그대로 쓴다.
+
+### 7. 전역 옵션 요약 (`core/options.lua`)
 
 | 옵션 | 값 |
 |---|---|
@@ -306,6 +320,13 @@ keybind = cmd+1=unbind
 | `windwp/nvim-autopairs` | 괄호/따옴표 자동 페어 (treesitter + cmp 연동) |
 | `numToStr/Comment.nvim` | 주석 토글 |
 | `JoosepAlviste/nvim-ts-context-commentstring` | embedded 언어 commentstring |
+
+### 마크다운
+
+| 플러그인 | 역할 |
+|---|---|
+| `MeanderingProgrammer/render-markdown.nvim` | 마크다운 conceal 렌더 (헤딩/코드블록/체크박스 등). INSERT/VISUAL 진입 시 자동으로 raw 표시 |
+| `folke/snacks.nvim` | `image` 모듈만 활성화. 마크다운 인라인 이미지 렌더 (Kitty graphics protocol + imagemagick) |
 
 ### Git / 세션 / 기타
 

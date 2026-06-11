@@ -3,7 +3,7 @@ return {
   dependencies = "nvim-tree/nvim-web-devicons",
   config = function()
     local nvimtree = require("nvim-tree")
-    -- local api = require("nvim-tree.api") -- nvim-tree 제어용 API (열기/닫기/포커스 등)
+    local api = require("nvim-tree.api")
 
     -- recommended settings from nvim-tree documentation
     vim.g.loaded_netrw = 1
@@ -19,7 +19,16 @@ return {
       end
     })
 
+    -- IntelliJ 스타일 ESC: 트리 닫지 않고 직전 창으로 포커스만 이동
+    local function on_attach(bufnr)
+      api.config.mappings.default_on_attach(bufnr)
+      vim.keymap.set("n", "<Esc>", function()
+        vim.cmd("wincmd p")
+      end, { buffer = bufnr, desc = "Focus previous window (keep tree open)" })
+    end
+
     nvimtree.setup({
+      on_attach = on_attach,
       view = {
         width = 35,
         relativenumber = true,
@@ -64,5 +73,20 @@ return {
     keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file" }) -- toggle file explorer on current file
     keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" }) -- collapse file explorer
     keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- refresh file explorer
+
+    -- IntelliJ 스타일 cmd+1: 트리 포커스 토글
+    -- WezTerm에서 Cmd+1 → Alt+1로 변환해 보내므로 nvim 쪽은 <M-1>로 받음
+    -- - 문서에서 누르면 트리 열고 포커스 (이미 열려있으면 포커스만)
+    -- - 트리에서 누르면 트리 닫고 직전 문서로 포커스
+    local function smart_tree_focus_toggle()
+      if vim.bo.filetype == "NvimTree" then
+        api.tree.close()
+      elseif api.tree.is_visible() then
+        api.tree.focus()
+      else
+        api.tree.open()
+      end
+    end
+    keymap.set("n", "<M-1>", smart_tree_focus_toggle, { desc = "Toggle focus nvim-tree (IntelliJ style)" })
   end
 }

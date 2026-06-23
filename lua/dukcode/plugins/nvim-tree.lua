@@ -87,6 +87,9 @@ return {
         api.tree.open()
       end
     end
+    -- <D-1>: GUI(neovide 등)에서 Cmd+1 직접 수신
+    -- <M-1>: 터미널(ghostty→tmux)에서 Cmd+1을 ESC+1로 변환해 전달받는 경로
     keymap.set("n", "<D-1>", smart_tree_focus_toggle, { desc = "Toggle focus nvim-tree (IntelliJ style)" })
+    keymap.set("n", "<M-1>", smart_tree_focus_toggle, { desc = "Toggle focus nvim-tree (IntelliJ style)" })
   end
 }
